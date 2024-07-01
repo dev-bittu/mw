@@ -4,6 +4,7 @@
 - [Overview](#overview)
 - [Features](#features)
 - [Installation](#installation)
+- [Terminologies](#terminologies)
 - [Usage](#usage)
 - [Contributing](#contributing)
 - [License](#license)
@@ -30,6 +31,10 @@ git clone https://github.com/dev-bittu/mw.git
 cd mw
 ```
 3. Compile and build the project (if applicable).
+
+## Terminologies
+- **Master**: It refers to the central controlling entity. It typically runs the main server application responsible for orchestrating actions, managing communication, and possibly delivering payloads to Nodes (Victims). The Master coordinates the activities and tasks executed by Nodes.
+- **Node**: It represents the endpoint or client device that receives commands or payloads from the Master (Attacker).
 
 ## Usage
 - Detailed instructions on how to run the malware prototype on Windows and Linux.
