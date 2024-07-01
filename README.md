@@ -9,7 +9,6 @@
 - [Contributing](#contributing)
 - [License](#license)
 - [Disclaimer](#disclaimer)
-- [Contact](#contact)
 
 ## Overview
 It is a project aimed at creating a simple malware prototype for educational and research purposes. It demonstrates basic techniques used in malware development and is intended solely for learning how malware operates and how to defend against it.
@@ -56,5 +55,3 @@ We welcome contributions to 'mw' to improve its educational value and correctnes
 - Emphasize the educational nature of the project.
 - Explicitly state that the project is for educational purposes only and should not be used for any malicious activities.
 
-## Contact
-- Provide contact information or ways to reach out for questions, concerns, or contributions.
