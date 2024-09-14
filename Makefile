@@ -1,34 +1,35 @@
-.PHONY: *
+.PHONY: all build clean install-deps test crun srun dist help
 
 # Project Variables
-BINARY_NAME = backdoor
-SRC_DIR = src
+SERVER_BIN_NAME = server
+CLIENT_BIN_NAME = client
+SRC_DIR = cmd
 BUILD_DIR = build
-GOOS_LIST = windows linux darwin
-GOARCH_LIST = amd64 arm64
 
-# Cross-compilation targets
-WINDOWS_BIN = $(BUILD_DIR)/$(BINARY_NAME)_windows.exe
-LINUX_BIN = $(BUILD_DIR)/$(BINARY_NAME)_linux
-MACOS_BIN = $(BUILD_DIR)/$(BINARY_NAME)_macos
+# Detect OS and architecture
+OS ?= $(shell go env GOOS)
+ARCH ?= $(shell go env GOARCH)
 
-# Default: Compile for all platforms
-all: install-deps build-windows build-linux build-macos
+# Binary suffixes for different platforms
+ifeq ($(OS),Windows_NT)
+    OS_SUFFIX = .exe
+    SET_ENV_PREFIX = set
+else
+    OS_SUFFIX = 
+    SET_ENV_PREFIX = 
+endif
 
-# Build for Windows
-build-windows:
-	@echo "Building for Windows..."
-	GOOS=windows GOARCH=amd64 go build -o $(WINDOWS_BIN) $(SRC_DIR)/main.go
+SERVER_BIN = $(BUILD_DIR)/$(SERVER_BIN_NAME)$(OS_SUFFIX)
+CLIENT_BIN = $(BUILD_DIR)/$(CLIENT_BIN_NAME)$(OS_SUFFIX)
 
-# Build for Linux
-build-linux:
-	@echo "Building for Linux..."
-	GOOS=linux GOARCH=amd64 go build -o $(LINUX_BIN) $(SRC_DIR)/main.go
+# Default: Build the project
+all: install-deps build
 
-# Build for macOS
-build-macos:
-	@echo "Building for macOS..."
-	GOOS=darwin GOARCH=amd64 go build -o $(MACOS_BIN) $(SRC_DIR)/main.go
+# Build for the current OS and architecture
+build:
+	@echo "Building for detected system: $(OS)/$(ARCH)..."
+	go build -o $(SERVER_BIN) $(SRC_DIR)/server/main.go
+	go build -o $(CLIENT_BIN) $(SRC_DIR)/client/main.go
 
 # Test the project (Optional: Add your Go/C tests here)
 test:
@@ -38,52 +39,45 @@ test:
 # Clean up built binaries
 clean:
 	@echo "Cleaning up..."
-	rm -f $(WINDOWS_BIN) $(LINUX_BIN) $(MACOS_BIN)
+	rm -f $(BUILD_DIR)/*
 
 # Install dependencies for Go, C/C++, and Python
 install-deps:
 	@echo "Installing dependencies..."
 	go mod tidy
-	sudo apt-get install gcc g++ python3 python3-pip -y
+	# Add additional dependencies if needed
 
 # Rebuild the project from scratch
 rebuild: clean all
 
-# Run the Windows binary (for testing)
-run-windows: build-windows
-	./$(WINDOWS_BIN)
+# Compile and run the client binary for the detected OS/architecture
+crun:
+	@echo "Building and running client binary for detected system: $(OS)/$(ARCH)..."
+	go build -o $(CLIENT_BIN) $(SRC_DIR)/client/main.go
+	@echo "Running client binary..."
+	./$(CLIENT_BIN)
 
-# Run the Linux binary (for testing)
-run-linux: build-linux
-	./$(LINUX_BIN)
-
-# Run the macOS binary (for testing)
-run-macos: build-macos
-	./$(MACOS_BIN)
-
-# Run all binaries (for multi-platform testing)
-run-all: run-windows run-linux run-macos
+# Compile and run the server binary for the detected OS/architecture
+srun:
+	@echo "Building and running server binary for detected system: $(OS)/$(ARCH)..."
+	go build -o $(SERVER_BIN) $(SRC_DIR)/server/main.go
+	@echo "Running server binary..."
+	./$(SERVER_BIN)
 
 # Create a zip archive of binaries for distribution
 dist: all
 	@echo "Creating distribution archive..."
-	zip -r $(BUILD_DIR)/$(BINARY_NAME)_dist.zip $(BUILD_DIR)/*
+	zip -r $(BUILD_DIR)/backdoor_dist.zip $(BUILD_DIR)/*
 
 # Help menu to list all available commands
 help:
 	@echo "Available commands:"
-	@echo "  make all            - Build binaries for all platforms"
-	@echo "  make build-windows  - Build Windows binary"
-	@echo "  make build-linux    - Build Linux binary"
-	@echo "  make build-macos    - Build macOS binary"
-	@echo "  make clean          - Clean up build artifacts"
-	@echo "  make rebuild        - Clean and build again"
-	@echo "  make test           - Run tests"
-	@echo "  make run-windows    - Run Windows binary"
-	@echo "  make run-linux      - Run Linux binary"
-	@echo "  make run-macos      - Run macOS binary"
-	@echo "  make run-all        - Run binaries for all platforms"
-	@echo "  make dist           - Package binaries into a zip archive"
-	@echo "  make install-deps   - Install Go, C/C++ and Python dependencies"
-
-.PHONY: all build-windows build-linux build-macos clean install-deps test run-windows run-linux run-macos dist help
+	@echo "  make all          - Install deps and build binaries for detected platform"
+	@echo "  make build        - Build the project for the detected platform"
+	@echo "  make clean        - Clean up build artifacts"
+	@echo "  make rebuild      - Clean and build again"
+	@echo "  make test         - Run tests"
+	@echo "  make crun         - Build and run the client binary"
+	@echo "  make srun         - Build and run the server binary"
+	@echo "  make dist         - Package binaries into a zip archive"
+	@echo "  make install-deps - Install Go and other dependencies"
