@@ -1,5 +1,7 @@
 # **MW** Multi-Platform Encrypted Backdoor with Fileless Persistence
 
+**I am currently learning Golang to complete this project. You can check out my practice-golang Git project.**
+
 ### **Overview**
 
 This project is a sophisticated, multi-platform encrypted backdoor designed with advanced techniques such as fileless persistence, encrypted communication, command execution over DNS, and modular payload delivery. Built with modularity and maintainability in mind, it is split into subprojects for better organization, development, and feature expansion. The project supports Windows, Linux, and macOS and is written primarily in Go, with additional components in C/C++ and Python for optimized memory control and low-level functionality.
